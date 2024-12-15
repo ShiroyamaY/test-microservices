@@ -1,1 +1,1 @@
-auth-db-service:5432:users_db:admin:pasword123
+auth-db-service:5432:users_db:admin:password123
