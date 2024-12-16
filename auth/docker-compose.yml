@@ -23,7 +23,7 @@ services:
       context: ./pgadmin-service
       dockerfile: Dockerfile
     container_name: pgadmin-service
-# load pgadmin defauld username and password to the environment.
+    # load pgadmin defauld username and password to the environment.
     env_file:
       - ./pgadmin-service/.env
     ports:
@@ -48,10 +48,29 @@ services:
     volumes:
       - auth-cache-serviceVL:/var/vcap/store/redis
       - ./auth-cache-service/redis.conf:/usr/local/etc/redis/redis.conf
+  auth-redis-commander-service:
+    build:
+      context: ./auth-redis-commander-service
+      dockerfile: Dockerfile
+    container_name: auth-redis-commander-service
+    hostname: redis-commander-service
+    # restart: always
+    secrets:
+      - auth-redis-pass
+    ports:
+      - ${Auth_REDIS_COMMANDER_PORT}:${Auth_REDIS_COMMANDER_PORT}
+    environment:
+      REDIS_HOST: auth-cache-service
+      REDIS_PORT: ${AUTH_REDIS_PORT}
+      REDIS_PASSWORD_FILE: /run/secrets/auth-redis-pass
+    volumes:
+      - redis-commander-VL:/data
+    depends_on:
+      - auth-cache-service
 volumes:
   auth-db-service-VL:
   auth-cache-serviceVL:
-
+  redis-commander-VL:
 secrets:
   auth-db-user:
     file: auth-db-service/user.txt
